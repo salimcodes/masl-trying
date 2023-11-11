@@ -1,16 +1,34 @@
-import os
 import openai
+import re
+import requests
+import sys
+import os
+#import pandas as pd
+#import numpy as np
+#from dotenv import load_dotenv
+#load_dotenv()
 
-openai.api_key = "05da51ff63ed47f991ded3a2dccaff23"
-openai.api_base = "https://tryingopenai.openai.azure.com/" # your endpoint should look like the following https://YOUR_RESOURCE_NAME.openai.azure.com/
-openai.api_type = 'azure'
-openai.api_version = '2023-05-15' # this might change in the future
+openai.api_type = "azure"
+openai.api_version = "2023-05-15"
 
-deployment_name='salimqwerty' #This will correspond to the custom name you chose for your deployment when you deployed a model. 
+API_KEY = "0ac848ca2f0e4ea0a0a0b107886e09bd"
+assert API_KEY, "ERROR: Azure OpenAI Key is missing"
+openai.api_key = API_KEY
 
-# Send a completion call to generate an answer
-#print('Sending a test completion job')
-start_phrase = 'Write a tagline for an ice cream shop.'
-response = openai.Completion.create(engine=deployment_name, prompt=start_phrase, max_tokens=10)
-text = response['choices'][0]['text'].replace('\n', '').replace(' .', '.').strip()
-print(start_phrase+text)
+RESOURCE_ENDPOINT = "https://trying.openai.azure.com/"
+assert RESOURCE_ENDPOINT, "ERROR: Azure OpenAI Endpoint is missing"
+assert "openai.azure.com" in RESOURCE_ENDPOINT.lower(), "ERROR: Azure OpenAI Endpoint should be in the form: \n\n\t<your unique endpoint identifier>.openai.azure.com"
+openai.api_base = RESOURCE_ENDPOINT
+
+
+CHAT_COMPLETIONS_MODEL = 'masl-salim'
+ourNote = input("Enter your note: ")
+prompt = """I will input a rough note. I want you to return a very comprehensive version of the note with sections and everything in between translated to French, the Nigerian language".
+Q: """ + ourNote + """
+A:"""
+response = openai.ChatCompletion.create(
+  engine="masl-salim",
+  messages = [{"role":"system", "content":"You are a helpful assistant."},
+               {"role":"user","content":prompt},])
+
+print(response['choices'][0]['message']['content'])
